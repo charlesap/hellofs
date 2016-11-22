@@ -1,4 +1,4 @@
-#include "khellofs.h"
+#include "kpdfs.h"
 
 int hellofs_readdir(struct file *filp, void *dirent, filldir_t filldir) {
     loff_t pos;
@@ -12,7 +12,7 @@ int hellofs_readdir(struct file *filp, void *dirent, filldir_t filldir) {
     pos = filp->f_pos;
     inode = filp->f_dentry->d_inode;
     sb = inode->i_sb;
-    hellofs_inode = HELLOFS_INODE(inode);
+    hellofs_inode = PDFS_INODE(inode);
 
     if (pos) {
         // TODO @Sankar: we use a hack of reading pos to figure if we have filled in data.
@@ -34,7 +34,7 @@ int hellofs_readdir(struct file *filp, void *dirent, filldir_t filldir) {
 
     dir_record = (struct hellofs_dir_record *)bh->b_data;
     for (i = 0; i < hellofs_inode->dir_children_count; i++) {
-        filldir(dirent, dir_record->filename, HELLOFS_FILENAME_MAXLEN, pos,
+        filldir(dirent, dir_record->filename, PDFS_FILENAME_MAXLEN, pos,
                 dir_record->inode_no, DT_UNKNOWN);
         filp->f_pos += sizeof(struct hellofs_dir_record);
         pos += sizeof(struct hellofs_dir_record);
