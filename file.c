@@ -1,4 +1,4 @@
-#include "khellofs.h"
+#include "kpdfs.h"
 
 ssize_t hellofs_read(struct file *filp, char __user *buf, size_t len,
                      loff_t *ppos) {
@@ -11,7 +11,7 @@ ssize_t hellofs_read(struct file *filp, char __user *buf, size_t len,
 
     inode = filp->f_path.dentry->d_inode;
     sb = inode->i_sb;
-    hellofs_inode = HELLOFS_INODE(inode);
+    hellofs_inode = PDFS_INODE(inode);
     
     if (*ppos >= hellofs_inode->file_size) {
         return 0;
@@ -55,8 +55,8 @@ ssize_t hellofs_write(struct file *filp, const char __user *buf, size_t len,
 
     inode = filp->f_path.dentry->d_inode;
     sb = inode->i_sb;
-    hellofs_inode = HELLOFS_INODE(inode);
-    hellofs_sb = HELLOFS_SB(sb);
+    hellofs_inode = PDFS_INODE(inode);
+    hellofs_sb = PDFS_SB(sb);
 
     ret = generic_write_checks(filp, ppos, &len, 0);
     if (ret) {
