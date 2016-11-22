@@ -12,7 +12,7 @@ ko:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
 mkfs-hellofs_SOURCES:
-	mkfs-pdfs.c hellofs.h
+	mkfs-pdfs.c pdfs.h
 
 clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
