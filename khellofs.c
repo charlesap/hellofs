@@ -1,4 +1,4 @@
-#include "khellofs.h"
+#include "kpdfs.h"
 
 DEFINE_MUTEX(hellofs_sb_lock);
 
@@ -75,4 +75,4 @@ module_init(hellofs_init);
 module_exit(hellofs_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("accelazh");
+MODULE_AUTHOR("accelazh,charlesap");
