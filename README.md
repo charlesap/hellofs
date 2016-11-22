@@ -1,5 +1,5 @@
 
-pdfs - An plausible deniability kernel filesystem implementation
+pdfs - A plausible deniability kernel filesystem implementation
 ===
 (forked from accelazh/hellofs)
 
