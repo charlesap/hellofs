@@ -1,7 +1,7 @@
 
 pdfs - A plausible deniability kernel filesystem implementation
 ===
-(forked from accelazh/hellofs)
+(forked from https://github.com/accelazh/hellofs)
 
 A very simple linux kernel filesystem for storing files in a plausibly deniable manner. It demonstrates how to implement a VFS filesystem, from superblock, inode, dir to file operations. The license is GPL because it was forked from a GPL example (hellofs.)
 
