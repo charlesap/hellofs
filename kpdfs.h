@@ -87,7 +87,7 @@ static inline uint64_t PDFS_DIR_MAX_RECORD(struct super_block *sb) {
 // From which block does data blocks start
 static inline uint64_t PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO(struct super_block *sb) {
     struct hellofs_superblock *hellofs_sb;
-    hellofs_sb = HELLOFS_SB(sb);
+    hellofs_sb = PDFS_SB(sb);
     return PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(hellofs_sb);
 }
 
