@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     // construct root inode
     struct hellofs_inode root_hellofs_inode = {
         .mode = S_IFDIR | S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH,
-        .inode_no = HELLOFS_ROOTDIR_INODE_NO,
+        .inode_no = PDFS_ROOTDIR_INODE_NO,
         .data_block_no 
             = PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(&hellofs_sb)
                 + PDFS_ROOTDIR_DATA_BLOCK_NO_OFFSET,
