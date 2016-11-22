@@ -1,7 +1,7 @@
-#include "khellofs.h"
+#include "kpdfs.h"
 
 void hellofs_destroy_inode(struct inode *inode) {
-    struct hellofs_inode *hellofs_inode = HELLOFS_INODE(inode);
+    struct hellofs_inode *hellofs_inode = PDFS_INODE(inode);
 
     printk(KERN_INFO "Freeing private data of inode %p (%lu)\n",
            hellofs_inode, inode->i_ino);
@@ -44,11 +44,11 @@ int hellofs_alloc_hellofs_inode(struct super_block *sb, uint64_t *out_inode_no) 
     char *slot;
     char needle;
 
-    hellofs_sb = HELLOFS_SB(sb);
+    hellofs_sb = PDFS_SB(sb);
 
     mutex_lock(&hellofs_sb_lock);
 
-    bh = sb_bread(sb, HELLOFS_INODE_BITMAP_BLOCK_NO);
+    bh = sb_bread(sb, PDFS_INODE_BITMAP_BLOCK_NO);
     BUG_ON(!bh);
 
     bitmap = bh->b_data;
@@ -80,10 +80,10 @@ struct hellofs_inode *hellofs_get_hellofs_inode(struct super_block *sb,
     struct hellofs_inode *inode;
     struct hellofs_inode *inode_buf;
 
-    bh = sb_bread(sb, HELLOFS_INODE_TABLE_START_BLOCK_NO + HELLOFS_INODE_BLOCK_OFFSET(sb, inode_no));
+    bh = sb_bread(sb, PDFS_INODE_TABLE_START_BLOCK_NO + PDFS_INODE_BLOCK_OFFSET(sb, inode_no));
     BUG_ON(!bh);
     
-    inode = (struct hellofs_inode *)(bh->b_data + HELLOFS_INODE_BYTE_OFFSET(sb, inode_no));
+    inode = (struct hellofs_inode *)(bh->b_data + PDFS_INODE_BYTE_OFFSET(sb, inode_no));
     inode_buf = kmem_cache_alloc(hellofs_inode_cache, GFP_KERNEL);
     memcpy(inode_buf, inode, sizeof(*inode_buf));
 
@@ -98,10 +98,10 @@ void hellofs_save_hellofs_inode(struct super_block *sb,
     uint64_t inode_no;
 
     inode_no = inode_buf->inode_no;
-    bh = sb_bread(sb, HELLOFS_INODE_TABLE_START_BLOCK_NO + HELLOFS_INODE_BLOCK_OFFSET(sb, inode_no));
+    bh = sb_bread(sb, PDFS_INODE_TABLE_START_BLOCK_NO + PDFS_INODE_BLOCK_OFFSET(sb, inode_no));
     BUG_ON(!bh);
 
-    inode = (struct hellofs_inode *)(bh->b_data + HELLOFS_INODE_BYTE_OFFSET(sb, inode_no));
+    inode = (struct hellofs_inode *)(bh->b_data + PDFS_INODE_BYTE_OFFSET(sb, inode_no));
     memcpy(inode, inode_buf, sizeof(*inode));
 
     mark_buffer_dirty(bh);
@@ -115,9 +115,9 @@ int hellofs_add_dir_record(struct super_block *sb, struct inode *dir,
     struct hellofs_inode *parent_hellofs_inode;
     struct hellofs_dir_record *dir_record;
 
-    parent_hellofs_inode = HELLOFS_INODE(dir);
+    parent_hellofs_inode = PDFS_INODE(dir);
     if (unlikely(parent_hellofs_inode->dir_children_count
-            >= HELLOFS_DIR_MAX_RECORD(sb))) {
+            >= PDFS_DIR_MAX_RECORD(sb))) {
         return -ENOSPC;
     }
 
@@ -148,11 +148,11 @@ int hellofs_alloc_data_block(struct super_block *sb, uint64_t *out_data_block_no
     char *slot;
     char needle;
 
-    hellofs_sb = HELLOFS_SB(sb);
+    hellofs_sb = PDFS_SB(sb);
 
     mutex_lock(&hellofs_sb_lock);
 
-    bh = sb_bread(sb, HELLOFS_DATA_BLOCK_BITMAP_BLOCK_NO);
+    bh = sb_bread(sb, PDFS_DATA_BLOCK_BITMAP_BLOCK_NO);
     BUG_ON(!bh);
 
     bitmap = bh->b_data;
@@ -162,7 +162,7 @@ int hellofs_alloc_data_block(struct super_block *sb, uint64_t *out_data_block_no
         needle = 1 << (i % BITS_IN_BYTE);
         if (0 == (*slot & needle)) {
             *out_data_block_no
-                = HELLOFS_DATA_BLOCK_TABLE_START_BLOCK_NO(sb) + i;
+                = PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO(sb) + i;
             *slot |= needle;
             hellofs_sb->data_block_count += 1;
             ret = 0;
@@ -189,7 +189,7 @@ int hellofs_create_inode(struct inode *dir, struct dentry *dentry,
     int ret;
 
     sb = dir->i_sb;
-    hellofs_sb = HELLOFS_SB(sb);
+    hellofs_sb = PDFS_SB(sb);
 
     /* Create hellofs_inode */
     ret = hellofs_alloc_hellofs_inode(sb, &inode_no);
@@ -262,7 +262,7 @@ int hellofs_mkdir(struct inode *dir, struct dentry *dentry,
 struct dentry *hellofs_lookup(struct inode *dir,
                               struct dentry *child_dentry,
                               unsigned int flags) {
-    struct hellofs_inode *parent_hellofs_inode = HELLOFS_INODE(dir);
+    struct hellofs_inode *parent_hellofs_inode = PDFS_INODE(dir);
     struct super_block *sb = dir->i_sb;
     struct buffer_head *bh;
     struct hellofs_dir_record *dir_record;
