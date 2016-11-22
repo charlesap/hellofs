@@ -8,7 +8,7 @@ test_mount_point="test-mount-point-$RANDOM"
 
 function create_test_image() {
     dd bs=4096 count=6000 if=/dev/zero of="$1"
-    ./mkfs-hellofs "$1"
+    ./mkfs-pdfs "$1"
 }
 
 function mount_fs_image() {
