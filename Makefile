@@ -1,6 +1,6 @@
-obj-m := hellofs.o
-hellofs-objs := khellofs.o super.o inode.o dir.o file.o
-CFLAGS_khellofs.o := -DDEBUG
+obj-m := pdfs.o
+pdfs-objs := kpdfs.o super.o inode.o dir.o file.o
+CFLAGS_kpdfs.o := -DDEBUG
 CFLAGS_super.o := -DDEBUG
 CFLAGS_inode.o := -DDEBUG
 CFLAGS_dir.o := -DDEBUG

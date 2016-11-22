@@ -12,13 +12,13 @@ function create_test_image() {
 }
 
 function mount_fs_image() {
-    insmod ./hellofs.ko
-    mount -o loop,owner,group,users -t hellofs "$1" "$2"
+    insmod ./pdfs.ko
+    mount -o loop,owner,group,users -t pdfs "$1" "$2"
 }
 
 function unmount_fs() {
     umount "$1"
-    rmmod ./hellofs.ko
+    rmmod ./pdfs.ko
 }
 
 function do_some_operations() {
@@ -74,8 +74,8 @@ function do_read_operations()
 
 function cleanup() {
     cd "$root_pwd"
-    mount | grep -q "$test_mount_point" && umount -t hellofs "$test_mount_point"
-    lsmod | grep -q hellofs && rmmod "$root_pwd/hellofs.ko"
+    mount | grep -q "$test_mount_point" && umount -t pdfs "$test_mount_point"
+    lsmod | grep -q pdfs && rmmod "$root_pwd/pdfs.ko"
     rm -fR "$test_dir" "$test_mount_point"
 }
 
