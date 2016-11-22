@@ -1,4 +1,4 @@
-#include "khellofs.h"
+#include "kpdfs.h"
 
 static int hellofs_fill_super(struct super_block *sb, void *data, int silent) {
     struct inode *root_inode;
@@ -7,14 +7,14 @@ static int hellofs_fill_super(struct super_block *sb, void *data, int silent) {
     struct hellofs_superblock *hellofs_sb;
     int ret = 0;
 
-    bh = sb_bread(sb, HELLOFS_SUPERBLOCK_BLOCK_NO);
+    bh = sb_bread(sb, PDFS_SUPERBLOCK_BLOCK_NO);
     BUG_ON(!bh);
     hellofs_sb = (struct hellofs_superblock *)bh->b_data;
-    if (unlikely(hellofs_sb->magic != HELLOFS_MAGIC)) {
+    if (unlikely(hellofs_sb->magic != PDFS_MAGIC)) {
         printk(KERN_ERR
                "The filesystem being mounted is not of type hellofs. "
                "Magic number mismatch: %llu != %llu\n",
-               hellofs_sb->magic, (uint64_t)HELLOFS_MAGIC);
+               hellofs_sb->magic, (uint64_t)PDFS_MAGIC);
         goto release;
     }
     if (unlikely(sb->s_blocksize != hellofs_sb->blocksize)) {
@@ -29,7 +29,7 @@ static int hellofs_fill_super(struct super_block *sb, void *data, int silent) {
     sb->s_maxbytes = hellofs_sb->blocksize;
     sb->s_op = &hellofs_sb_ops;
 
-    root_hellofs_inode = hellofs_get_hellofs_inode(sb, HELLOFS_ROOTDIR_INODE_NO);
+    root_hellofs_inode = hellofs_get_hellofs_inode(sb, PDFS_ROOTDIR_INODE_NO);
     root_inode = new_inode(sb);
     if (!root_inode || !root_hellofs_inode) {
         ret = -ENOMEM;
@@ -77,9 +77,9 @@ void hellofs_put_super(struct super_block *sb) {
 
 void hellofs_save_sb(struct super_block *sb) {
     struct buffer_head *bh;
-    struct hellofs_superblock *hellofs_sb = HELLOFS_SB(sb);
+    struct hellofs_superblock *hellofs_sb = PDFS_SB(sb);
 
-    bh = sb_bread(sb, HELLOFS_SUPERBLOCK_BLOCK_NO);
+    bh = sb_bread(sb, PDFS_SUPERBLOCK_BLOCK_NO);
     BUG_ON(!bh);
 
     bh->b_data = (char *)hellofs_sb;
