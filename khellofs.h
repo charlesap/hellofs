@@ -1,7 +1,7 @@
-#ifndef __KHELLOFS_H__
-#define __KHELLOFS_H__
+#ifndef __KPDFS_H__
+#define __KPDFS_H__
 
-/* khellofs.h defines symbols to work in kernel space */
+/* kpdfs.h defines symbols to work in kernel space */
 
 #include <linux/blkdev.h>
 #include <linux/buffer_head.h>
@@ -15,7 +15,7 @@
 #include <linux/time.h>
 #include <linux/version.h>
 
-#include "hellofs.h"
+#include "pdfs.h"
 
 /* Declare operations to be hooked to VFS */
 
@@ -53,42 +53,42 @@ extern struct kmem_cache *hellofs_inode_cache;
 /* Helper functions */
 
 // To translate VFS superblock to hellofs superblock
-static inline struct hellofs_superblock *HELLOFS_SB(struct super_block *sb) {
+static inline struct hellofs_superblock *PDFS_SB(struct super_block *sb) {
     return sb->s_fs_info;
 }
-static inline struct hellofs_inode *HELLOFS_INODE(struct inode *inode) {
+static inline struct hellofs_inode *PDFS_INODE(struct inode *inode) {
     return inode->i_private;
 }
 
-static inline uint64_t HELLOFS_INODES_PER_BLOCK(struct super_block *sb) {
+static inline uint64_t PDFS_INODES_PER_BLOCK(struct super_block *sb) {
     struct hellofs_superblock *hellofs_sb;
-    hellofs_sb = HELLOFS_SB(sb);
-    return HELLOFS_INODES_PER_BLOCK_HSB(hellofs_sb);
+    hellofs_sb = PDFS_SB(sb);
+    return PDFS_INODES_PER_BLOCK_HSB(hellofs_sb);
 }
 
 // Given the inode_no, calcuate which block in inode table contains the corresponding inode
-static inline uint64_t HELLOFS_INODE_BLOCK_OFFSET(struct super_block *sb, uint64_t inode_no) {
+static inline uint64_t PDFS_INODE_BLOCK_OFFSET(struct super_block *sb, uint64_t inode_no) {
     struct hellofs_superblock *hellofs_sb;
-    hellofs_sb = HELLOFS_SB(sb);
-    return inode_no / HELLOFS_INODES_PER_BLOCK_HSB(hellofs_sb);
+    hellofs_sb = PDFS_SB(sb);
+    return inode_no / PDFS_INODES_PER_BLOCK_HSB(hellofs_sb);
 }
-static inline uint64_t HELLOFS_INODE_BYTE_OFFSET(struct super_block *sb, uint64_t inode_no) {
+static inline uint64_t PDFS_INODE_BYTE_OFFSET(struct super_block *sb, uint64_t inode_no) {
     struct hellofs_superblock *hellofs_sb;
-    hellofs_sb = HELLOFS_SB(sb);
-    return (inode_no % HELLOFS_INODES_PER_BLOCK_HSB(hellofs_sb)) * sizeof(struct hellofs_inode);
+    hellofs_sb = PDFS_SB(sb);
+    return (inode_no % PDFS_INODES_PER_BLOCK_HSB(hellofs_sb)) * sizeof(struct hellofs_inode);
 }
 
-static inline uint64_t HELLOFS_DIR_MAX_RECORD(struct super_block *sb) {
+static inline uint64_t PDFS_DIR_MAX_RECORD(struct super_block *sb) {
     struct hellofs_superblock *hellofs_sb;
-    hellofs_sb = HELLOFS_SB(sb);
+    hellofs_sb = PDFS_SB(sb);
     return hellofs_sb->blocksize / sizeof(struct hellofs_dir_record);
 }
 
 // From which block does data blocks start
-static inline uint64_t HELLOFS_DATA_BLOCK_TABLE_START_BLOCK_NO(struct super_block *sb) {
+static inline uint64_t PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO(struct super_block *sb) {
     struct hellofs_superblock *hellofs_sb;
     hellofs_sb = HELLOFS_SB(sb);
-    return HELLOFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(hellofs_sb);
+    return PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(hellofs_sb);
 }
 
 void hellofs_save_sb(struct super_block *sb);
@@ -107,4 +107,4 @@ int hellofs_alloc_data_block(struct super_block *sb, uint64_t *out_data_block_no
 int hellofs_create_inode(struct inode *dir, struct dentry *dentry,
                          umode_t mode);
 
-#endif /*__KHELLOFS_H__*/
+#endif /*__KPDFS_H__*/
