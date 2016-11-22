@@ -10,20 +10,20 @@
 
 /* Define filesystem structures */
 
-extern struct mutex hellofs_sb_lock;
+extern struct mutex pdfs_sb_lock;
 
-struct hellofs_dir_record {
+struct pdfs_dir_record {
     char filename[PDFS_FILENAME_MAXLEN];
     uint64_t inode_no;
 };
 
-struct hellofs_inode {
+struct pdfs_inode {
     mode_t mode;
     uint64_t inode_no;
     uint64_t data_block_no;
 
     // TODO struct timespec is defined kenrel space,
-    // but mkfs-hellofs.c is compiled in user space
+    // but mkfs-pdfs.c is compiled in user space
     /*struct timespec atime;
     struct timespec mtime;
     struct timespec ctime;*/
@@ -34,7 +34,7 @@ struct hellofs_inode {
     };
 };
 
-struct hellofs_superblock {
+struct pdfs_superblock {
     uint64_t version;
     uint64_t magic;
     uint64_t blocksize;
@@ -59,14 +59,14 @@ static const uint64_t PDFS_ROOTDIR_DATA_BLOCK_NO_OFFSET = 0;
 /* Helper functions */
 
 static inline uint64_t PDFS_INODES_PER_BLOCK_HSB(
-        struct hellofs_superblock *hellofs_sb) {
-    return hellofs_sb->blocksize / sizeof(struct hellofs_inode);
+        struct pdfs_superblock *pdfs_sb) {
+    return pdfs_sb->blocksize / sizeof(struct pdfs_inode);
 }
 
 static inline uint64_t PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(
-        struct hellofs_superblock *hellofs_sb) {
+        struct pdfs_superblock *pdfs_sb) {
     return PDFS_INODE_TABLE_START_BLOCK_NO
-           + hellofs_sb->inode_table_size / PDFS_INODES_PER_BLOCK_HSB(hellofs_sb)
+           + pdfs_sb->inode_table_size / PDFS_INODES_PER_BLOCK_HSB(pdfs_sb)
            + 1;
 }
 

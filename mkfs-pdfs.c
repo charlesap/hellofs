@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     }
 
     // construct superblock
-    struct hellofs_superblock hellofs_sb = {
+    struct pdfs_superblock pdfs_sb = {
         .version = 1,
         .magic = PDFS_MAGIC,
         .blocksize = PDFS_DEFAULT_BLOCKSIZE,
@@ -33,21 +33,21 @@ int main(int argc, char *argv[]) {
     };
 
     // construct inode bitmap
-    char inode_bitmap[hellofs_sb.blocksize];
+    char inode_bitmap[pdfs_sb.blocksize];
     memset(inode_bitmap, 0, sizeof(inode_bitmap));
     inode_bitmap[0] = 1;
 
     // construct data block bitmap
-    char data_block_bitmap[hellofs_sb.blocksize];
+    char data_block_bitmap[pdfs_sb.blocksize];
     memset(data_block_bitmap, 0, sizeof(data_block_bitmap));
     data_block_bitmap[0] = 1;
 
     // construct root inode
-    struct hellofs_inode root_hellofs_inode = {
+    struct pdfs_inode root_pdfs_inode = {
         .mode = S_IFDIR | S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH,
         .inode_no = PDFS_ROOTDIR_INODE_NO,
         .data_block_no 
-            = PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(&hellofs_sb)
+            = PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(&pdfs_sb)
                 + PDFS_ROOTDIR_DATA_BLOCK_NO_OFFSET,
         .dir_children_count = 1,
     };
@@ -56,17 +56,17 @@ int main(int argc, char *argv[]) {
     char welcome_body[] = "Welcome Hellofs!!\n";
     welcome_inode_no = PDFS_ROOTDIR_INODE_NO + 1;
     welcome_data_block_no_offset = PDFS_ROOTDIR_DATA_BLOCK_NO_OFFSET + 1;
-    struct hellofs_inode welcome_hellofs_inode = {
+    struct pdfs_inode welcome_pdfs_inode = {
         .mode = S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH,
         .inode_no = welcome_inode_no,
         .data_block_no 
-            = PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(&hellofs_sb)
+            = PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(&pdfs_sb)
                 + welcome_data_block_no_offset,
         .file_size = sizeof(welcome_body),
     };
 
     // construct root inode data block
-    struct hellofs_dir_record root_dir_records[] = {
+    struct pdfs_dir_record root_dir_records[] = {
         {
             .filename = "wel_helo.txt",
             .inode_no = welcome_inode_no,
@@ -76,13 +76,13 @@ int main(int argc, char *argv[]) {
     ret = 0;
     do {
         // write super block
-        if (sizeof(hellofs_sb)
-                != write(fd, &hellofs_sb, sizeof(hellofs_sb))) {
+        if (sizeof(pdfs_sb)
+                != write(fd, &pdfs_sb, sizeof(pdfs_sb))) {
             ret = -1;
             break;
         }
         if ((off_t)-1
-                == lseek(fd, hellofs_sb.blocksize, SEEK_SET)) {
+                == lseek(fd, pdfs_sb.blocksize, SEEK_SET)) {
             ret = -2;
             break;
         }
@@ -103,17 +103,17 @@ int main(int argc, char *argv[]) {
         }
 
         // write root inode
-        if (sizeof(root_hellofs_inode)
-                != write(fd, &root_hellofs_inode,
-                         sizeof(root_hellofs_inode))) {
+        if (sizeof(root_pdfs_inode)
+                != write(fd, &root_pdfs_inode,
+                         sizeof(root_pdfs_inode))) {
             ret = -5;
             break;
         }
 
         // write welcome file inode
-        if (sizeof(welcome_hellofs_inode)
-                != write(fd, &welcome_hellofs_inode,
-                         sizeof(welcome_hellofs_inode))) {
+        if (sizeof(welcome_pdfs_inode)
+                != write(fd, &welcome_pdfs_inode,
+                         sizeof(welcome_pdfs_inode))) {
             ret = -6;
             break;
         }
@@ -122,8 +122,8 @@ int main(int argc, char *argv[]) {
         if ((off_t)-1
                 == lseek(
                     fd,
-                    PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(&hellofs_sb)
-                        * hellofs_sb.blocksize,
+                    PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(&pdfs_sb)
+                        * pdfs_sb.blocksize,
                     SEEK_SET)) {
             ret = -7;
             break;
@@ -139,8 +139,8 @@ int main(int argc, char *argv[]) {
         if ((off_t)-1
                 == lseek(
                     fd,
-                    (PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(&hellofs_sb)
-                        + 1) * hellofs_sb.blocksize,
+                    (PDFS_DATA_BLOCK_TABLE_START_BLOCK_NO_HSB(&pdfs_sb)
+                        + 1) * pdfs_sb.blocksize,
                     SEEK_SET)) {
             ret = -9;
             break;
